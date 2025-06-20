@@ -1,0 +1,235 @@
+/*共通*/
+
+:root {
+  --primary-color: #333333;
+  --secondary-color: #ffffff;
+  --text-color: #fff;
+  --accent-color: #FFA500;
+  --sub-nav-color: #000000;
+  --button-color: #633319;
+}
+
+.required-star {
+  color: red;
+}
+
+
+.confirmation-details {
+  background-color: #ffffff;
+  border: 1px solid #eee;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.confirm-form {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.confirm-form strong {
+  display: inline-block;
+  width: 100%;
+  margin-right: 10px;
+  color: #333;
+}
+
+.regi-form>p {
+  text-align: center;
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+.regi-form .btn-submit {
+  display: block;
+  width: 50%;
+  margin: 20px auto 0;
+  background-color: var(--button-color);
+}
+
+.register p a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.register p a:hover {
+  text-decoration: underline;
+}
+
+.register-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.register {
+  background-color: #f9f9f9;
+  padding: 30px 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.register .wrapper-title {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.register .wrapper-title h3 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.register .wrapper-title p {
+  font-size: 14px;
+  color: #666;
+}
+
+.regi-form .form-group {
+  margin-bottom: 20px;
+}
+
+.regi-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #555;
+}
+
+.regi-form input[type="text"],
+.regi-form input[type="email"],
+.regi-form input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.regi-form input[type="text"]:focus,
+.regi-form input[type="email"]:focus,
+.regi-form input[type="password"]:focus {
+  border-color: #ffa600;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(255, 174, 0, 0.25);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #FFA500;
+  ;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #ffa600;
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+.alert-danger {
+  color: red;
+}
+
+/* タブレット向けスタイル (768px以上 1024px以下) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .register {
+    max-width: 600px;
+    padding: 35px 50px;
+  }
+
+  .register .wrapper-title h3 {
+    font-size: 30px;
+  }
+
+  .register .wrapper-title p {
+    font-size: 15px;
+  }
+
+  .regi-form label {
+    font-size: 15px;
+  }
+
+  .regi-form input[type="text"],
+  .regi-form input[type="email"],
+  .regi-form input[type="password"] {
+    padding: 14px 18px;
+    font-size: 17px;
+  }
+
+  .btn-submit {
+    padding: 14px 18px;
+    font-size: 17px;
+  }
+
+  .invalid-feedback {
+    color: red;
+  }
+
+  .alert-danger {
+    color: red;
+  }
+}
+
+/* PC向けスタイル (960px以上) */
+/* 960px-1024pxの範囲では、こちらのスタイルがタブレットのスタイルを上書きします */
+@media (min-width: 960px) {
+  .register {
+    max-width: 650px;
+    /* PCではもう少し幅を広げる */
+    padding: 40px 60px;
+  }
+
+  .register .wrapper-title h3 {
+    font-size: 32px;
+  }
+
+  .register .wrapper-title p {
+    font-size: 16px;
+  }
+
+  .regi-form label {
+    font-size: 16px;
+  }
+
+  .regi-form input[type="text"],
+  .regi-form input[type="email"],
+  .regi-form input[type="password"] {
+    padding: 15px 20px;
+    font-size: 18px;
+  }
+
+  .btn-submit {
+    padding: 15px 20px;
+    font-size: 18px;
+  }
+
+  .invalid-feedback {
+    color: red;
+  }
+
+  .alert-danger {
+    color: red;
+  }
+}

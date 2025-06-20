@@ -1,0 +1,324 @@
+@charset "UTF-8";
+
+.checkout-options {
+  margin-top: 20px;
+  /* モバイルでは少し狭く */
+  padding: 15px;
+  /* モバイルでは少し狭く */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+
+.shipping-info-form p {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+
+.checkout-options h4 {
+  text-align: center;
+  margin-bottom: 20px;
+  /* モバイルでは少し狭く */
+  color: #333;
+  font-size: 1.3em;
+  /* モバイルでは少し小さく */
+}
+
+.login-section,
+.register-section,
+.guest-checkout-section {
+  margin-bottom: 15px;
+  /* モバイルでは少し狭く */
+  padding: 10px;
+  /* モバイルでは少し狭く */
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background-color: #fff;
+  border-bottom: 1px solid #007bff;
+}
+
+.login-section h5,
+.register-section h5,
+.guest-checkout-section h5 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  /* モバイルでは少し狭く */
+  color: #555;
+  font-size: 1.1em;
+  /* モバイルでは少し小さく */
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  /* モバイルでは少し狭く */
+}
+
+.checkout-options form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* モバイルでは少し狭く */
+}
+
+.checkout-options input[type="email"],
+.checkout-options input[type="password"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.checkout-options .btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  font-size: 1em;
+  margin-top: 5px;
+}
+
+.checkout-options .btn-blue {
+  background-color: #007bff;
+  color: white;
+}
+
+.checkout-options .btn-blue:hover {
+  background-color: #0056b3;
+}
+
+.checkout-options .btn-gray {
+  background-color: #6c757d;
+  color: white;
+}
+
+.checkout-options .btn-gray:hover {
+  background-color: #5a6268;
+}
+
+.checkout-options .btn-green {
+  background-color: #28a745;
+  color: white;
+}
+
+.checkout-options .btn-green:hover {
+  background-color: #218838;
+}
+
+.checkout-options hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #ccc;
+}
+
+.wrapper-title h1 {
+  font-size: 1.8em;
+  margin-bottom: 25px;
+  text-align: center;
+  color: #333;
+}
+
+.order-note {
+  padding: 15px;
+}
+
+.form-section {
+  background-color: #f9f9f9;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+  font-size: 1.3em;
+  color: #333;
+  margin: 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-select {
+  width: 30%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 1em;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 1em;
+}
+
+.form-select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-text {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.form-actions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.form-actions .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  padding: 12px 25px;
+  font-size: 1.1em;
+  border-radius: 5px;
+  color: #fff;
+  margin: 0;
+}
+
+.form-actions .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.order-confirm-details {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.shipping-details p {
+  padding: 5px 0;
+  font-size: 1em;
+  color: #333;
+}
+
+.payment-details p {
+  padding: 5px 0;
+  font-size: 1em;
+  color: #333;
+
+}
+
+.payment-details h2 {
+  font-size: 1.3em;
+  color: #333;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.order-summary h2 {
+  font-size: 1.3em;
+  color: #333;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+}
+
+.order-total {
+  font-size: 1.2em;
+  color: #333;
+  padding: 10px 0;
+}
+
+.cart-list tbody tr {
+  background-color: #fff;
+}
+
+.order-total {
+  border-bottom: 1px solid #333;
+}
+
+.order-total h3 {
+  text-align: right;
+}
+
+.navigation-buttons {
+  padding-top: 20px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .wrapper-title h1 {
+    font-size: 1.5em;
+  }
+
+  .checkout-options {
+    margin-top: 30px;
+    padding: 20px;
+  }
+
+  .checkout-options h4 {
+    margin-bottom: 25px;
+    font-size: 1.5em;
+  }
+
+  .login-section,
+  .register-section,
+  .guest-checkout-section {
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+
+  .login-section h5,
+  .register-section h5,
+  .guest-checkout-section h5 {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    padding-bottom: 10px;
+  }
+
+  .checkout-options form {
+    gap: 10px;
+  }
+
+  .checkout-options input[type="email"],
+  .checkout-options input[type="password"] {
+    padding: 10px;
+    font-size: 1em;
+  }
+
+  .checkout-options .btn {
+    display: inline-block;
+    width: auto;
+    padding: 10px 20px;
+    margin: 0 5px;
+  }
+
+  .checkout-options hr {
+    margin: 30px 0;
+  }
+}
+
+@media (min-width: 960px) {
+
+  .checkout-options {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .checkout-options input[type="email"],
+  .checkout-options input[type="password"] {
+    font-size: 1em;
+  }
+
+
+}

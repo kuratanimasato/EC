@@ -1,0 +1,404 @@
+/* カート*/
+@charset "UTF-8";
+
+/* CSS Variables (Optional: Add if you want to use variables from style.css) */
+/*
+:root {
+  --primary-color: #333333;
+  --secondary-color: #ffffff;
+  --text-color: #fff;
+  --accent-color: #FFA500;
+  --sub-nav-color: #000000;
+}
+*/
+
+/* Mobile First Styles */
+.main-content ul {
+  padding: 10px 0;
+  list-style: none;
+  margin: 0;
+}
+
+.cart-count {
+  color: red;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-left: 2px;
+}
+
+.cart-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.main-content li {
+  margin-right: 10px;
+  font-size: 0.9em;
+}
+
+.main-content a {
+  text-decoration: none;
+}
+
+.wrapper.last-wrapper {
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.wrapper-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.wrapper-title h3 {
+  font-size: 1.5em;
+  margin: 0 0 5px 0;
+}
+
+.wrapper-title p {
+  font-size: 1em;
+  color: #666;
+  margin: 0;
+}
+
+.cart-list {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.cart-list thead {
+  display: none;
+}
+
+.cart-list tbody tr {
+  display: block;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.cart-list tbody tr.total {
+  display: table-row;
+  border: none;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.cart-list tbody tr.total th,
+.cart-list tbody tr.total td {
+  display: table-cell;
+  text-align: right;
+  padding: 10px;
+  border-top: 2px solid #333;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.cart-list tbody tr.total th {
+  text-align: left;
+}
+
+
+.cart-list td {
+  display: block;
+  /* Show table cells as blocks on mobile */
+  text-align: right;
+  padding: 5px 0;
+  border-bottom: 1px dotted #eee;
+}
+
+.cart-list td:last-child {
+  border-bottom: none;
+}
+
+.cart-list td::before {
+  content: attr(label);
+  /* Use data-label attribute for labels */
+  font-weight: bold;
+  float: left;
+  margin-right: 10px;
+}
+
+.cart-list td[label="商品画像"] {
+  text-align: center;
+}
+
+.cart-list td[label="商品画像"] img {
+  max-width: 80px;
+  /* Adjust image size */
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.cart-list td[label="操作"] {
+  text-align: center;
+  padding-top: 15px;
+}
+
+.cart-list .btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.cart-list .btn-red {
+  background-color: #dc3545;
+  color: white;
+}
+
+.cart-list .btn-red:hover {
+  background-color: #c82333;
+}
+
+
+.cart-btn {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.cart-btn .btn {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.cart-btn .btn-blue {
+  background-color: #007bff;
+  color: white;
+}
+
+.cart-btn .btn-blue:hover {
+  background-color: #0056b3;
+}
+
+.cart-btn .btn-gray {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cart-list .product-name {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.cart-list .product-img {
+  margin-left: auto;
+}
+
+/* Tablet Layout */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .cart-list tbody tr {
+    display: table-row;
+    /* Show table rows as table rows */
+    border: none;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  .cart-list thead {
+    display: table-header-group;
+    /* Show table header */
+  }
+
+  .cart-list th,
+  .cart-list td {
+    display: table-cell;
+    /* Show table cells as table cells */
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .cart-list td::before {
+    content: none;
+    /* Hide mobile labels */
+  }
+
+  .cart-list th {
+    background-color: #f8f9fa;
+    /* Light background for header */
+    font-weight: bold;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .cart-list td[label="商品画像"] {
+    text-align: center;
+    width: 100px;
+    /* Adjust column width */
+  }
+
+  .cart-list td[label="商品画像"] img {
+    max-width: 80px;
+    margin: 0 auto;
+  }
+
+  .cart-list td[label="小計"],
+  .cart-list td[label="個数"] {
+    text-align: right;
+    width: 80px;
+    /* Adjust column width */
+  }
+
+  .cart-list td[label="カラー"] {
+    width: 80px;
+    /* Adjust column width */
+  }
+
+  .cart-list td[label="操作"] {
+    text-align: center;
+    width: 100px;
+    /* Adjust column width */
+  }
+
+  .cart-list tbody tr.total th,
+  .cart-list tbody tr.total td {
+    padding: 10px;
+  }
+
+  .cart-list tbody tr.total th {
+    text-align: left;
+  }
+
+  .cart-list tbody tr.total td {
+    text-align: right;
+  }
+
+  .cart-list tbody tr.total th[colspan="3"] {
+    text-align: right;
+    /* Align "合計" label to the right */
+  }
+
+  .cart-list tbody tr.total th[colspan="3"],
+  .cart-list tbody tr.total th[colspan="2"] {
+    border-bottom: none;
+    /* Remove border for total row headers */
+  }
+
+  .cart-list tbody tr.total td[colspan="2"] {
+    border-bottom: none;
+    /* Remove border for total row cells */
+  }
+
+  .cart-btn {
+    text-align: center;
+    /* Align buttons to the right */
+  }
+
+  .cart-list .product-name {
+    flex-direction: row-reverse;
+  }
+}
+
+
+@media (min-width: 960px) {
+  .cart-list tbody tr {
+    display: table-row;
+    border: none;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  .cart-list thead {
+    display: table-header-group;
+  }
+
+  .cart-list th,
+  .cart-list td {
+    display: table-cell;
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .cart-list td::before {
+    content: none;
+  }
+
+  .cart-list th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .cart-list td[label="商品画像"] {
+    text-align: center;
+    width: 120px;
+  }
+
+  .cart-list td[label="商品画像"] img {
+    max-width: 100px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .cart-list td[label="小計"],
+  .cart-list td[label="個数"] {
+    text-align: right;
+    width: 100px;
+  }
+
+  .cart-list td[label="カラー"] {
+    width: 100px;
+  }
+
+
+  .cart-list td[label="操作"] {
+    text-align: center;
+    width: 120px;
+  }
+
+  .cart-list tbody tr.total th,
+  .cart-list tbody tr.total td {
+    padding: 10px;
+  }
+
+  .cart-list tbody tr.total th {
+    text-align: left;
+  }
+
+  .cart-list tbody tr.total td {
+    text-align: right;
+  }
+
+  .cart-list tbody tr.total th[colspan="3"] {
+    text-align: right;
+  }
+
+  .cart-list tbody tr.total th[colspan="3"],
+  .cart-list tbody tr.total th[colspan="2"] {
+    border-bottom: none;
+
+  }
+
+  .cart-list tbody tr.total td[colspan="2"] {
+    border-bottom: none;
+  }
+
+
+  .cart-btn {
+    text-align: center;
+  }
+
+  .cart-list .product-name {
+    flex-direction: row-reverse;
+  }
+}
