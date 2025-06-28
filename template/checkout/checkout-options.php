@@ -7,13 +7,12 @@ if (isUserLoggedIn()) {
   header('Location: /template/checkout/shipping-info.php'); // 例: 配送先入力ページ
   exit();
 }
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   // CSRF対策
-  checkToken();
+  if (!validateCsrfToken('checkout-options')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
 }
 ?>
 <main>
@@ -31,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </a></h2>
           </div>
           <hr>
-
           <!-- 新規会員登録へのリンク -->
           <div class="register-section">
             <h3>初めてご利用の方・会員登録をご希望の方</h3>

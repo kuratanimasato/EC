@@ -13,7 +13,6 @@ $ranked_products_from_db = [];
 $ranking_error_message = '';
 //GET通信だった場合はセッション変数にトークンを追加
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
   $ranked_products_from_db = [];
   if (isset($pdo))
     try {
@@ -35,7 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   //POST通信だった場合はログイン処理を開始
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ////CSRF対策
-    checkToken();
+    if (!validateCsrfToken('ranking')) {
+      // CSRFトークンが無効な場合はエラーメッセージを表示
+      $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+    }
+
     // POSTされてきたデータを変数に格納
     foreach ($datas as $key => $value) {
       $postValue = filter_input(INPUT_POST, $key, FILTER_DEFAULT);

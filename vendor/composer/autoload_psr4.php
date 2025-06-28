@@ -7,5 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
+    'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
+    'ParagonIE\\AntiCSRF\\' => array($vendorDir . '/paragonie/anti-csrf/src'),
     'Faker\\' => array($vendorDir . '/fakerphp/faker/src/Faker'),
 );

@@ -15,6 +15,8 @@ class ComposerStaticInit654d435b9ec785dab53ccf731f35fea3
         'P' => 
         array (
             'Psr\\Container\\' => 14,
+            'ParagonIE\\ConstantTime\\' => 23,
+            'ParagonIE\\AntiCSRF\\' => 19,
         ),
         'F' => 
         array (
@@ -26,6 +28,14 @@ class ComposerStaticInit654d435b9ec785dab53ccf731f35fea3
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'ParagonIE\\ConstantTime\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
+        ),
+        'ParagonIE\\AntiCSRF\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/paragonie/anti-csrf/src',
         ),
         'Faker\\' => 
         array (

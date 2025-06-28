@@ -4,9 +4,6 @@ require_once dirname(__DIR__, 2) . '/app/database/db_connect.php';
 include dirname(__DIR__) . '/front/header.php';
 include dirname(__DIR__) . '/parts/sub-navigation.php';
 
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
 
 $raw_keyword = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS);
 $normalized_keyword = preg_replace('/　/u', ' ', $raw_keyword); // 全角スペースを半角に

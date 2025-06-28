@@ -3,7 +3,9 @@ require_once dirname(__DIR__) . '/app/database/db_connect.php';
 require_once dirname(__DIR__) . '/app/functions.php';
 
 // セッションを開始
-startSession();
+if (session_status() === PHP_SESSION_NONE) {
+  startSession();
+}
 
 // ログインしていなければログインページへリダイレクト
 if (!isAdminLoggedIn()) {
@@ -33,7 +35,6 @@ $datas['administrator_id'] = $_GET['id'];
 
 // GET通信の場合
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
 
   $sql = "SELECT admin_user, email FROM administrators WHERE administrator_id = :administrator_id";
   $stmt = $pdo->prepare($sql);
@@ -49,7 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
 // POST通信の場合
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  checkToken();
+
+  if (!validateCsrfToken('admin-edit')) {
+    // CSRFトークンが無効な場合はエラーメッセージを表示
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
 
   foreach ($datas as $key => $value) {
     if ($value = filter_input(INPUT_POST, $key, FILTER_DEFAULT)) {
@@ -114,118 +119,100 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 ?>
-<!DOCTYPE html>
-<html lang="ja">
+<?php include dirname(__DIR__) . '/Admin/parts/header.php'; ?>
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理者情報編集</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  </head>
+<body>
+  <div class="container mt-4">
+    <?php if (!empty($errors)): ?>
+      <div class="alert alert-danger">
+        <ul>
+          <?php foreach ($errors as $error): ?>
+            <li><?php echo h($error); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+    <?php if ($success_message): ?>
+      <div class="alert alert-success">
+        <?php echo h($success_message); ?>
+      </div>
+    <?php endif; ?>
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h1 class="mb-0 text-center">管理者情報編集</h1>
+          </div>
+          <div class="card-body">
 
-  <body>
-    <div class="container mt-4">
-      <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger">
-          <ul>
-            <?php foreach ($errors as $error): ?>
-              <li><?php echo h($error); ?></li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-      <?php endif; ?>
-      <?php if ($success_message): ?>
-        <div class="alert alert-success">
-          <?php echo h($success_message); ?>
-        </div>
-      <?php endif; ?>
-      <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-          <div class="card">
-            <div class="card-header">
-              <h1 class="mb-0 text-center">管理者情報編集</h1>
-            </div>
-            <div class="card-body">
+            <form action="<?php echo h($_SERVER['SCRIPT_NAME']) . '?id=' . h($datas['administrator_id']); ?>"
+              method="POST">
+              <?php echo insertCsrfToken('admin-edit'); ?>
+              <input type="hidden" name="administrator_id" value="<?php echo h($datas['administrator_id']); ?>">
 
-              <form action="<?php echo h($_SERVER['SCRIPT_NAME']) . '?id=' . h($datas['administrator_id']); ?>"
-                method="POST">
-                <input type="hidden" name="token" value="<?php echo h($_SESSION['token'] ?? ''); ?>">
-                <input type="hidden" name="administrator_id" value="<?php echo h($datas['administrator_id']); ?>">
-
-                <div class="row mb-3">
-                  <label for="admin_user" class="col-sm-4 col-form-label text-sm-end">管理者名:</label>
-                  <div class="col-sm-8">
-                    <input type="text"
-                      class="form-control <?php echo (!empty($errors['admin_user'])) ? 'is-invalid' : ''; ?>"
-                      id="admin_user" name="admin_user" value="<?php echo h($datas['admin_user']); ?>" required>
-                    <?php if (!empty($errors['admin_user'])): ?>
-                      <div class="invalid-feedback"><?php echo h($errors['admin_user']); ?></div>
-                    <?php endif; ?>
-                  </div>
+              <div class="row mb-3">
+                <label for="admin_user" class="col-sm-4 col-form-label text-sm-end">管理者名:</label>
+                <div class="col-sm-8">
+                  <input type="text"
+                    class="form-control <?php echo (!empty($errors['admin_user'])) ? 'is-invalid' : ''; ?>"
+                    id="admin_user" name="admin_user" value="<?php echo h($datas['admin_user']); ?>" required>
+                  <?php if (!empty($errors['admin_user'])): ?>
+                    <div class="invalid-feedback"><?php echo h($errors['admin_user']); ?></div>
+                  <?php endif; ?>
                 </div>
-                <div class="row mb-3">
-                  <label for="email" class="col-sm-4 col-form-label text-sm-end">メールアドレス:</label>
-                  <div class="col-sm-8">
-                    <input type="email"
-                      class="form-control <?php echo (!empty($errors['email'])) ? 'is-invalid' : ''; ?>" id="email"
-                      name="email" value="<?php echo h($datas['email']); ?>" required>
-                    <?php if (!empty($errors['email'])): ?>
-                      <div class="invalid-feedback"><?php echo h($errors['email']); ?></div>
-                    <?php endif; ?>
-                  </div>
+              </div>
+              <div class="row mb-3">
+                <label for="email" class="col-sm-4 col-form-label text-sm-end">メールアドレス:</label>
+                <div class="col-sm-8">
+                  <input type="email" class="form-control <?php echo (!empty($errors['email'])) ? 'is-invalid' : ''; ?>"
+                    id="email" name="email" value="<?php echo h($datas['email']); ?>" required>
+                  <?php if (!empty($errors['email'])): ?>
+                    <div class="invalid-feedback"><?php echo h($errors['email']); ?></div>
+                  <?php endif; ?>
                 </div>
-                <div class="row mb-3">
-                  <label for="current_password" class="col-sm-4 col-form-label text-sm-end">現在のパスワード:</label>
-                  <div class="col-sm-8">
-                    <input type="password"
-                      class="form-control <?php echo (!empty($errors['current_password'])) ? 'is-invalid' : ''; ?>"
-                      id="current_password" name="current_password" value="">
-                    <small class="form-text text-muted">パスワードを変更する場合のみ入力してください。</small>
-                    <?php if (!empty($errors['current_password'])): ?>
-                      <div class="invalid-feedback"><?php echo h($errors['current_password']); ?></div>
-                    <?php endif; ?>
-                  </div>
+              </div>
+              <div class="row mb-3">
+                <label for="current_password" class="col-sm-4 col-form-label text-sm-end">現在のパスワード:</label>
+                <div class="col-sm-8">
+                  <input type="password"
+                    class="form-control <?php echo (!empty($errors['current_password'])) ? 'is-invalid' : ''; ?>"
+                    id="current_password" name="current_password" value="">
+                  <small class="form-text text-muted">パスワードを変更する場合のみ入力してください。</small>
+                  <?php if (!empty($errors['current_password'])): ?>
+                    <div class="invalid-feedback"><?php echo h($errors['current_password']); ?></div>
+                  <?php endif; ?>
                 </div>
-                <div class="row mb-3">
-                  <label for="new_password" class="col-sm-4 col-form-label text-sm-end">新しいパスワード:</label>
-                  <div class="col-sm-8">
-                    <input type="password"
-                      class="form-control <?php echo (!empty($errors['new_password'])) ? 'is-invalid' : ''; ?>"
-                      id="new_password" name="new_password" placeholder="(変更する場合のみ入力)">
-                    <?php if (!empty($errors['new_password'])): ?>
-                      <div class="invalid-feedback"><?php echo h($errors['new_password']); ?></div>
-                    <?php endif; ?>
-                  </div>
+              </div>
+              <div class="row mb-3">
+                <label for="new_password" class="col-sm-4 col-form-label text-sm-end">新しいパスワード:</label>
+                <div class="col-sm-8">
+                  <input type="password"
+                    class="form-control <?php echo (!empty($errors['new_password'])) ? 'is-invalid' : ''; ?>"
+                    id="new_password" name="new_password" placeholder="(変更する場合のみ入力)">
+                  <?php if (!empty($errors['new_password'])): ?>
+                    <div class="invalid-feedback"><?php echo h($errors['new_password']); ?></div>
+                  <?php endif; ?>
                 </div>
-                <div class="row mb-3">
-                  <label for="confirm_new_password" class="col-sm-4 col-form-label text-sm-end">新しいパスワード (確認):</label>
-                  <div class="col-sm-8">
-                    <input type="password"
-                      class="form-control <?php echo (!empty($errors['confirm_new_password'])) ? 'is-invalid' : ''; ?>"
-                      id="confirm_new_password" name="confirm_new_password" placeholder="(変更する場合のみ入力)">
-                    <?php if (!empty($errors['confirm_new_password'])): ?>
-                      <div class="invalid-feedback"><?php echo h($errors['confirm_new_password']); ?></div>
-                    <?php endif; ?>
-                  </div>
+              </div>
+              <div class="row mb-3">
+                <label for="confirm_new_password" class="col-sm-4 col-form-label text-sm-end">新しいパスワード (確認):</label>
+                <div class="col-sm-8">
+                  <input type="password"
+                    class="form-control <?php echo (!empty($errors['confirm_new_password'])) ? 'is-invalid' : ''; ?>"
+                    id="confirm_new_password" name="confirm_new_password" placeholder="(変更する場合のみ入力)">
+                  <?php if (!empty($errors['confirm_new_password'])): ?>
+                    <div class="invalid-feedback"><?php echo h($errors['confirm_new_password']); ?></div>
+                  <?php endif; ?>
                 </div>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mt-4">
-                  <a href="admin_settings.php" class="btn btn-secondary order-sm-1  btn-sm">キャンセル</a>
-                  <button type="submit" class="btn btn-primary order-sm-2  btn-sm">更新</button>
-                </div>
-              </form>
-            </div>
+              </div>
+              <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mt-4">
+                <a href="admin_settings.php" class="btn btn-secondary order-sm-1  btn-sm">キャンセル</a>
+                <button type="submit" class="btn btn-primary order-sm-2  btn-sm">更新</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
-      </script>
-  </body>
-
-</html>
+  </div>
+  <?php include dirname(__DIR__) . '/Admin/parts/script.php'; ?>

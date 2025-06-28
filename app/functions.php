@@ -1,24 +1,23 @@
 <?php
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 //XSS対策
 function h($s)
 {
   return htmlspecialchars($s ?? '', ENT_QUOTES, "UTF-8");
 }
 
-//セッションにトークンセット
-function setToken()
+/**CSRFトークンを検証 */
+
+function insertCsrfToken($action = 'default')
 {
-  $token = sha1(uniqid(mt_rand(), true));
-  $_SESSION['token'] = $token;
+  $antiCSRF = new \ParagonIE\AntiCSRF\AntiCSRF();
+  return $antiCSRF->insertToken($action);
 }
 
-//セッション変数のトークンとPOSTされたトークンをチェック
-function checkToken()
+function validateCsrfToken($action = 'default')
 {
-  if (empty($_SESSION['token']) || ($_SESSION['token'] != $_POST['token'])) {
-    echo 'Invalid POST', PHP_EOL;
-    exit;
-  }
+  $antiCSRF = new \ParagonIE\AntiCSRF\AntiCSRF();
+  return $antiCSRF->validateRequest($action);
 }
 
 //POSTされた値のバリデーション (管理者用)
@@ -364,6 +363,7 @@ function product_EditData($datas)
 function startSession()
 {
   if (session_status() === PHP_SESSION_NONE) {
+
     session_start();
   }
 }

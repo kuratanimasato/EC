@@ -12,14 +12,12 @@ if (!isAdminLoggedIn()) {
   exit;
 }
 
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
 //POST通信だった場合は処理を開始
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  ////CSRF対策
-  checkToken();
+  // CSRFトークンの検証
+  if (!validateCsrfToken('users')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
 
   // POSTされてきたデータを変数に格納
   foreach ($datas as $key => $value) {
@@ -92,61 +90,52 @@ try {
   $pdo->rollback();
 }
 ?>
-<!DOCTYPE html>
-<html lang="ja">
+<?php include dirname(__DIR__, 2) . '/Admin/parts/header.php'; ?>
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理者一覧</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  </head>
-
-  <body>
-    <div class="container mt-4">
-      <?php if (isset($db_error)): ?>
-        <div class="alert alert-danger text-center">
-          <?php echo h($db_error); ?>
-        </div>
-      <?php endif; ?>
-      <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success alert-dismissible fade show text-center fade-message" role="alert">
-          <?php echo h($_GET['success']); ?>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-          </button>
-        </div>
-      <?php endif; ?>
-      <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show text-center fade-message" role="alert">
-          <?php echo h($_GET['error']); ?>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <?php endif; ?>
-      <div class="row">
-        <div class="row justify-content-center">
-          <div class="col-lg-12 col-xl-12">
-            <div class="card">
-              <dilutdiv class="card-header">
-                <a href="../dashboard.php" class="btn btn-primary">ダッシュボード画面へ戻る</a>
-                <h1 class="mb-0 text-center">会員管理一覧</h1>
-                <div class="position-absolute top-0 end-0">
-                  <form action="users.php" class="input-group rounded-pill ms-auto  mt-2" style="max-width: 350px;"
-                    method="GET">
-                    <input type="text" name="keyword" class="form-control" placeholder="キーワードを入力"
-                      value="<?php echo h($keyword ?? ''); ?>" required>
-                    <button type="submit" class="btn btn-primary" id="button-addon2">
-                      <i class="fas fa-search"></i>
-                      検索
-                    </button>
-                  </form>
-                  <a href="download.php?<?php echo http_build_query(['keyword' => $keyword ?? '']); ?>"
-                    class="btn btn-success ms-2 mt-2">
-                    CSVダウンロード
-                  </a>
-                </div>
-              </dilutdiv class="card-body">
+<body>
+  <div class="container mt-4">
+    <?php if (isset($db_error)): ?>
+      <div class="alert alert-danger text-center">
+        <?php echo h($db_error); ?>
+      </div>
+    <?php endif; ?>
+    <?php if (isset($_GET['success'])): ?>
+      <div class="alert alert-success alert-dismissible fade show text-center fade-message" role="alert">
+        <?php echo h($_GET['success']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+      </div>
+    <?php endif; ?>
+    <?php if (isset($_GET['error'])): ?>
+      <div class="alert alert-danger alert-dismissible fade show text-center fade-message" role="alert">
+        <?php echo h($_GET['error']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php endif; ?>
+    <div class="row">
+      <div class="row justify-content-center">
+        <div class="col-lg-12 col-xl-12">
+          <div class="card">
+            <div class="card-header">
+              <a href="../dashboard.php" class="btn btn-primary">ダッシュボード画面へ戻る</a>
+              <h1 class="mb-0 text-center">会員管理一覧</h1>
+              <div class="position-absolute top-0 end-0">
+                <form action="users.php" class="input-group rounded-pill ms-auto  mt-2" style="max-width: 350px;"
+                  method="GET">
+                  <input type="text" name="keyword" class="form-control" placeholder="キーワードを入力"
+                    value="<?php echo h($keyword ?? ''); ?>" required>
+                  <button type="submit" class="btn btn-primary" id="button-addon2">
+                    <i class="fas fa-search"></i>
+                    検索
+                  </button>
+                </form>
+                <a href="download.php?<?php echo http_build_query(['keyword' => $keyword ?? '']); ?>"
+                  class="btn btn-success ms-2 mt-2">
+                  CSVダウンロード
+                </a>
+              </div>
+            </div>
+            <div class="card-body">
               <?php if (!empty($members)): ?>
                 <div class="table-responsive　">
                   <table class="table table-striped table-bordered table-hover text-center">
@@ -174,6 +163,7 @@ try {
                                 onclick="location.href='users_edit.php?id=<?php echo h($member['member_id']); ?>'">編集</button>
                               <form action="users_delete.php" method="post" class="m-0">
                                 <input type="hidden" name="id" value="<?php echo h($member['member_id']); ?>">
+                                <?php echo insertCsrfToken('users'); ?>
                                 <button type="submit" class="btn btn-danger btn-sm"
                                   onclick="return confirm('本当に削除しますか？');">削除</button>
                               </form>
@@ -216,22 +206,5 @@ try {
         </div>
       </div>
     </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
-      </script>
-    <script>
-      window.addEventListener('DOMContentLoaded', () => {
-        const messages = document.querySelectorAll('.fade-message');
-        messages.forEach(msg => {
-          setTimeout(() => {
-            msg.style.transition = 'opacity 0.5s ease';
-            msg.style.opacity = '0';
-            setTimeout(() => msg.remove(), 500); // DOMから削除
-          }, 5000);
-        });
-      });
-    </script>
-  </body>
-
-</html>
+  </div>
+  <?php include dirname(__DIR__, 2) . '/Admin/parts/script.php'; ?>

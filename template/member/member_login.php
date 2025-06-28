@@ -30,7 +30,7 @@ include dirname(__DIR__, 2) . '/Member/login_members.php';
             <div class="invalid-feedback"><?php echo h($errors['password']); ?></div>
             <?php endif; ?>
           </div>
-          <input type="hidden" name="token" value="<?php echo h($_SESSION['token']); ?>" />
+          <?php echo insertCsrfToken('member_login'); ?>
           <button type="submit" class="btn btn-submit">ログイン</button>
         </form>
       </div>

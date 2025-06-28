@@ -12,16 +12,14 @@ if (!isAdminLoggedIn()) {
   exit;
 }
 $datas = [];
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  // CSRF対策のため、トークンを生成
-  setToken();
-}
+
 
 //POST通信だった場合はログイン処理を開始
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   ////CSRF対策
-  checkToken();
+  if (!validateCsrfToken('products-delete')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
   if (!$product_id) {
     header("location: products.php?error=" . urlencode('削除対象の商品IDが不正です。'));

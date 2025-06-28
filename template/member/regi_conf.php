@@ -26,8 +26,7 @@ if (isset($_SESSION['registration_confirmation_data'])) {
               <p class="confirm-form"><strong>ご住所:</strong> <?php echo h($confirmationData['address']); ?></p>
               <input type="hidden" name="address" value="<?php echo h($confirmationData['address']); ?>">
             </div>
-            <input type="hidden" name="token" value="<?php echo h($_SESSION['token']); ?>" />
-            <input type="hidden" name="form_type" value="confirmation"> <?php // どのフォームからの送信か識別子を追加 ?>
+            <?php echo insertCsrfToken('register_members'); ?>
             <p>こちらの内容で送信してよろしいですか？</p>
             <button type="submit" class="btn btn-submit">送信する</button>
           </form>

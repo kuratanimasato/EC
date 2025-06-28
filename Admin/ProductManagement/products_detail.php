@@ -16,7 +16,6 @@ if (!isAdminLoggedIn()) {
 $product = null;
 $error_message = '';
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
   //販売ステータス日本語
   $sales_status_labels = [
     'active' => '販売中',
@@ -52,99 +51,89 @@ if (!empty($product['product_id'])) {
   $colors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
-<!DOCTYPE html>
-<html lang="ja">
 
-  <head>
-    <meta charset="UTF-8">
-    <title>商品詳細</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
+<?php include dirname(__DIR__, 2) . '/Admin/parts/header.php'; ?>
 
-  <body>
-    <div class="container mt-4">
-      <h1 class="mb-4">商品詳細</h1>
-      <?php if ($error_message): ?>
-        <div class="alert alert-danger"><?php echo h($error_message); ?></div>
-      <?php elseif ($product): ?>
-        <table class="table table-bordered">
-          <colgroup>
-            <col style="width: 140px;">
-            <col>
-          </colgroup>
-          <tr>
-            <th>商品ID</th>
-            <td><?php echo h($product['product_id']); ?></td>
-          </tr>
-          <tr>
-            <th>ジャンル</th>
-            <td><?php echo h($product['genre_name'] ?? $product['genre_id']); ?></td>
-          </tr>
-          <tr>
-            <th>商品名</th>
-            <td><?php echo h($product['product_name']); ?></td>
-          </tr>
-          <tr>
-            <th>商品画像</th>
-            <td>
-              <?php if (!empty($product['product_image'])): ?>
-                <img src="/uploads/images/<?php echo h(basename($product['product_image'])); ?>" alt="商品画像"
-                  style="max-width:250px;">
-              <?php else: ?>
-                <span class="text-muted">画像なし</span>
-              <?php endif; ?>
-            </td>
-          </tr>
-          <tr>
-            <th>カラー</th>
-            <td>
-              <?php if ($colors): ?>
-                <?php foreach ($colors as $color): ?>
-                  <span style="display:inline-block;vertical-align:middle;margin-right:8px;">
-                    <?php if ($color['color_code']): ?>
-                      <span
-                        style="display:inline-block;width:18px;height:18px;border-radius:50%;background:<?php echo h($color['color_code']); ?>;border:1px solid #ccc;vertical-align:middle;margin-right:3px;"></span>
-                    <?php endif; ?>
-                    <?php echo h($color['color_name']); ?>
-                  </span>
-                <?php endforeach; ?>
-              <?php else: ?>
-                <span class="text-muted">なし</span>
-              <?php endif; ?>
-            </td>
-          </tr>
-          <tr>
-            <th>説明</th>
-            <td><?php echo nl2br(h($product['description'])); ?></td>
-          </tr>
-          <tr>
-            <th>販売状況</th>
-            <td><?php
-            $status = $product['sales_status'];
-            ;
-            echo isset($sales_status_labels[$status]) ? h($sales_status_labels[$status]) : h($status);
-            ?></td>
-          </tr>
-          <th>おすすめ</th>
+<body>
+  <div class="container mt-4">
+    <h1 class="mb-4">商品詳細</h1>
+    <?php if ($error_message): ?>
+      <div class="alert alert-danger"><?php echo h($error_message); ?></div>
+    <?php elseif ($product): ?>
+      <table class="table table-bordered">
+        <colgroup>
+          <col style="width: 140px;">
+          <col>
+        </colgroup>
+        <tr>
+          <th>商品ID</th>
+          <td><?php echo h($product['product_id']); ?></td>
+        </tr>
+        <tr>
+          <th>ジャンル</th>
+          <td><?php echo h($product['genre_name'] ?? $product['genre_id']); ?></td>
+        </tr>
+        <tr>
+          <th>商品名</th>
+          <td><?php echo h($product['product_name']); ?></td>
+        </tr>
+        <tr>
+          <th>商品画像</th>
           <td>
-            <?php if ($product['is_recommended'] == 1): ?>
-              <span class="badge bg-success">おすすめ商品</span>
+            <?php if (!empty($product['product_image'])): ?>
+              <img src="/uploads/images/<?php echo h(basename($product['product_image'])); ?>" alt="商品画像"
+                style="max-width:250px;">
             <?php else: ?>
-              <span class="text-muted">通常商品</span>
+              <span class="text-muted">画像なし</span>
             <?php endif; ?>
           </td>
-          <tr>
-            <th>在庫</th>
-            <td><?php echo h($product['stock']); ?></td>
-          </tr>
-          <tr>
-            <th>価格</th>
-            <td><?php echo number_format($product['price_without_tax']); ?> 円</td>
-          </tr>
-        </table>
-        <a href="products.php" class="btn btn-secondary btn-sm">一覧へ戻る</a>
-      <?php endif; ?>
-    </div>
-  </body>
-
-</html>
+        </tr>
+        <tr>
+          <th>カラー</th>
+          <td>
+            <?php if ($colors): ?>
+              <?php foreach ($colors as $color): ?>
+                <span style="display:inline-block;vertical-align:middle;margin-right:8px;">
+                  <?php if ($color['color_code']): ?>
+                    <span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:<?php echo h($color['color_code']); ?>;border:1px
+    solid #ccc;vertical-align:middle;margin-right:3px;"></span>
+                  <?php endif; ?>
+                  <?php echo h($color['color_name']); ?>
+                </span> <?php endforeach; ?>   <?php else: ?>
+              <span class="text-muted">なし</span>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <tr>
+          <th>説明</th>
+          <td><?php echo nl2br(h($product['description'])); ?></td>
+        </tr>
+        <tr>
+          <th>販売状況</th>
+          <td><?php
+          $status = $product['sales_status'];
+          ;
+          echo isset($sales_status_labels[$status]) ? h($sales_status_labels[$status]) : h($status);
+          ?></td>
+        </tr>
+        <th>おすすめ</th>
+        <td>
+          <?php if ($product['is_recommended'] == 1): ?>
+            <span class="badge bg-success">おすすめ商品</span>
+          <?php else: ?>
+            <span class="text-muted">通常商品</span>
+          <?php endif; ?>
+        </td>
+        <tr>
+          <th>在庫</th>
+          <td><?php echo h($product['stock']); ?></td>
+        </tr>
+        <tr>
+          <th>価格</th>
+          <td><?php echo number_format($product['price_without_tax']); ?> 円</td>
+        </tr>
+      </table>
+      <a href="products.php" class="btn btn-secondary btn-sm">一覧へ戻る</a>
+    <?php endif; ?>
+  </div>
+  <?php include dirname(__DIR__, 2) . '/Admin/parts/footer.php'; ?>

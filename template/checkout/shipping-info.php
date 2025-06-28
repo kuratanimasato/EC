@@ -27,7 +27,7 @@ $member_data_exists = false;
 
 // GET通信だった場合はセッション変数にトークンを追加
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
+ 
   try {
     $stmt = $pdo->prepare("SELECT name, email, postal_code, address, phone_number FROM members WHERE member_id = :member_id");
     $stmt->bindValue(':member_id', $loggedInMemberId, PDO::PARAM_INT);
@@ -49,7 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
 // POST通信の場合はCSRFトークンをチェック
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  checkToken();
+  // CSRF対策
+  if (!validateCsrfToken('shipping-info')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
 
   // POSTされてきたデータを変数に格納
   foreach ($datas as $key => $value) {
@@ -163,7 +166,7 @@ $is_cart_empty = empty($_SESSION['cart']);
             <!-- 支払い方法選択へ進むボタン -->
             <div class="form-group">
               <div class="btn-group">
-                <input type="hidden" name="token" value="<?php echo h($_SESSION['token'] ?? ''); ?>" />
+                <?php echo insertCsrfToken('shipping-info'); ?>
                 <button type="submit" class="btn btn-blue"
                   onclick="<?php if (!$is_cart_empty) { ?>location.href='pay.php'<?php } ?>"
                   <?php if ($is_cart_empty) { ?>disabled<?php } ?>>支払い方法選択へ</button>

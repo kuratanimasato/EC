@@ -12,16 +12,13 @@ $datas = [
   'password' => '',
 ];
 $login_err = "";
-
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
 //POST通信だった場合はログイン処理を開始
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   ////CSRF対策
-  checkToken();
+  if (!validateCsrfToken('login_members')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   // POSTされてきたデータを変数に格納
   foreach ($datas as $key => $value) {
     $postValue = filter_input(INPUT_POST, $key, FILTER_DEFAULT);

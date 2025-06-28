@@ -2,14 +2,12 @@
 include dirname(__DIR__) . '/front/header.php';
 $detail = '/../index.php';
 $checkout = '/template/checkout/checkout-options.php';
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
 // POST通信だった場合は削除処理を開始
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   // CSRF対策
-  checkToken();
+  if (!validateCsrfToken('cart')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   if (isset($_POST['delete_name'])) {
     // delete_nameがセットされているかを確認
     $delete_name = h($_POST['delete_name']);
@@ -96,7 +94,7 @@ $tax_rate = 0.10;
                     <form action="cart.php" method="POST">
                       <input type="hidden" name="delete_name" value="<?php echo h($cart_item['name']); ?>">
                       <!-- CSRFトークンを追加 -->
-                      <input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>">
+                      <?php echo insertCsrfToken('cart'); ?>
                       <button type="submit" class="btn btn-red">削除</button>
                     </form>
                   </td>

@@ -1,6 +1,7 @@
 {
     "require": {
-        "fakerphp/faker": "^1.24"
+        "fakerphp/faker": "^1.24",
+        "paragonie/anti-csrf": "^2.4"
     },
     "autoload": {
         "files":["app/constants.php"]

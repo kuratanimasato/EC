@@ -8,15 +8,13 @@ if (!isUserLoggedIn()) {
   exit();
 }
 
-// GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
 
 // POST通信の場合はCSRFトークンをチェック
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  checkToken();
-
+  // CSRF対策
+  if (!validateCsrfToken('pay')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   // POSTされてきたデータを変数に格納
   foreach ($datas as $key => $value) {
     $postValue = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -69,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   </select>
                 </div>
                 <div class="form-actions" style="margin-top: 30px; text-align: center;">
-                  <input type="hidden" name="token" value="<?php echo h($_SESSION['token'] ?? ''); ?>" />
+                  <?php echo insertCsrfToken('pay'); ?>
                   <button type="submit" class="btn btn-primary btn-lg">ご注文内容確認へ </button>
                 </div>
             </form>

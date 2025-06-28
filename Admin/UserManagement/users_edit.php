@@ -47,8 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
       $pdo->rollback();
       exit;
     }
-    // GET通信時はトークンをセット
-    setToken();
 
   } else {
     // IDが指定されていない場合は会員一覧へリダイレクト
@@ -56,7 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit;
   }
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  checkToken();
+  if (!validateCsrfToken('users-edit')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   // POSTされてきたデータを変数に格納
   foreach ($datas as $key => $value) {
     if ($value = filter_input(INPUT_POST, $key, FILTER_DEFAULT)) {
@@ -93,70 +93,54 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
+<?php include dirname(__DIR__, 2) . '/Admin/parts/header.php'; ?>
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理者一覧</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  </head>
+<body>
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h1 class="mb-0 text-center">会員編集</h1>
+          </div>
+          <div class="card-body">
+            <?php if (!empty($errors)): ?>
+              <div class="alert alert-danger">
+                <ul>
+                  <?php foreach ($errors as $error): ?>
+                    <li><?php echo h($error); ?></li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+            <?php endif; ?>
+            <?php if ($success_message): ?>
+              <div class="alert alert-success">
+                <?php echo h($success_message); ?>
+              </div> <?php endif; ?>
+            <form action="users_edit.php?id=<?php echo h($datas['member_id']); ?>" method="POST">
+              <?php echo insertCsrfToken('users-edit'); ?>
+              <div class="mb-3">
+                <label for="name" class="form-label">ID</label>
+                <input type="text" class="form-control" id="member_id" name="member_id"
+                  value="<?php echo h($datas['member_id']); ?>" disabled readonly>
+              </div>
+              <div class="mb-3">
+                <label for="name" class="form-label">氏名</label>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo h($datas['name']); ?>"
+                  required>
+              </div>
 
-  <body>
-    <div class="container mt-4">
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h1 class="mb-0 text-center">会員編集</h1>
-            </div>
-            <div class="card-body">
-              <?php if (!empty($errors)): ?>
-                <div class="alert alert-danger">
-                  <ul>
-                    <?php foreach ($errors as $error): ?>
-                      <li><?php echo h($error); ?></li>
-                    <?php endforeach; ?>
-                  </ul>
-                </div>
-              <?php endif; ?>
-              <?php if ($success_message): ?>
-                <div class="alert alert-success">
-                  <?php echo h($success_message); ?>
-                </div> <?php endif; ?>
-              <form action="users_edit.php?id=<?php echo h($datas['member_id']); ?>" method="POST">
-                <input type="hidden" name="token" value="<?php echo h($_SESSION['token']); ?>">
-                <div class="mb-3">
-                  <label for="name" class="form-label">ID</label>
-                  <input type="text" class="form-control" id="member_id" name="member_id"
-                    value="<?php echo h($datas['member_id']); ?>" disabled readonly>
-                </div>
-                <div class="mb-3">
-                  <label for="name" class="form-label">氏名</label>
-                  <input type="text" class="form-control" id="name" name="name" value="<?php echo h($datas['name']); ?>"
-                    required>
-                </div>
-
-                <div class="mb-3">
-                  <label for="email" class="form-label">メールアドレス</label>
-                  <input type="email" class="form-control" id="email" name="email"
-                    value="<?php echo h($datas['email']); ?>" required>
-                </div>
-                <button type="submit" class="btn btn-primary">更新</button>
-                <a href="users.php" class="btn btn-secondary">一覧に戻る</a>
-              </form>
-            </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">メールアドレス</label>
+                <input type="email" class="form-control" id="email" name="email"
+                  value="<?php echo h($datas['email']); ?>" required>
+              </div>
+              <button type="submit" class="btn btn-primary">更新</button>
+              <a href="users.php" class="btn btn-secondary">一覧に戻る</a>
+            </form>
           </div>
         </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
-      </script>
-  </body>
-  </body>
-
-</html>
+  </div>
+  <?php include dirname(__DIR__, 2) . '/Admin/parts/script.php'; ?>

@@ -3,12 +3,7 @@ require_once dirname(__DIR__, 2) . '/app/functions.php';
 require_once dirname(__DIR__, 2) . '/app/database/db_connect.php';
 include dirname(__DIR__) . '/front/header.php';
 include dirname(__DIR__) . '/parts/sub-navigation.php';
-//GET通信だった場合はセッション変数にトークンを追加
 
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-
-}
 //ページング設定
 $limit = 8;
 // 現在のページ番号

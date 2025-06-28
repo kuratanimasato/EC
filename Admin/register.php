@@ -13,15 +13,12 @@ $datas = [
   'confirm_password' => ''
 ];
 
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
 //POST通信だった場合はDBへの新規登録処理を開始
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  //CSRF対策
-  checkToken();
-
+  if (!validateCsrfToken('admin-register')) {
+    // CSRFトークンが無効な場合はエラーメッセージを表示
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   // POSTされてきたデータを変数に格納
   foreach ($datas as $key => $value) {
     if ($value = filter_input(INPUT_POST, $key, FILTER_DEFAULT)) {
@@ -82,71 +79,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 ?>
-<!DOCTYPE html>
-<html lang="ja">
+<?php require_once dirname(__DIR__) . '/Admin/parts/header.php'; ?>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
-      </script>
-    <title>管理者登録</title>
-    <link rel="icon" href="favicon.ico" />
-
-  <body class="bg-light py-5">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card shadow-sm p-4">
-            <h2 class="mb-4 text-center">新規登録</h2>
-            <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="post">
-              <div class="mb-3">
-                <label for="name" class="form-label">管理者名</label>
-                <input type="text" class="form-control <?php echo !empty($errors['admin_user']) ? 'is-invalid' : ''; ?>"
-                  id="admin_user" name="admin_user" value="<?php echo h($datas['admin_user'] ?? ''); ?>">
-                <?php if (!empty($errors['admin_user'])): ?>
-                  <div class="invalid-feedback"><?php echo h($errors['admin_user']); ?></div>
-                <?php endif; ?>
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">メールアドレス</label>
-                <input type="email" class="form-control <?php echo !empty($errors['email']) ? 'is-invalid' : ''; ?>"
-                  id="email" name="email" value="<?php echo h($datas['email'] ?? ''); ?>">
-                <?php if (!empty($errors['email'])): ?>
-                  <div class="invalid-feedback"><?php echo h($errors['email']); ?></div>
-                <?php endif; ?>
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">パスワード</label>
-                <input type="password"
-                  class="form-control <?php echo !empty($errors['password']) ? 'is-invalid' : ''; ?>" id="password"
-                  name="password" value="<?php echo h($datas['password'] ?? ''); ?>">
-                <?php if (!empty($errors['password'])): ?>
-                  <div class="invalid-feedback"><?php echo h($errors['password']); ?></div>
-                <?php endif; ?>
-              </div>
-              <div class="mb-4">
-                <label for="confirm_password" class="form-label">パスワード確認</label>
-                <input type="password"
-                  class="form-control <?php echo !empty($errors['confirm_password']) ? 'is-invalid' : ''; ?>"
-                  id="confirm_password" name="confirm_password"
-                  value="<?php echo h($datas['confirm_password'] ?? ''); ?>">
-                <?php if (!empty($errors['confirm_password'])): ?>
-                  <div class="invalid-feedback"><?php echo h($errors['confirm_password']); ?></div>
-                <?php endif; ?>
-              </div>
-              <input type="hidden" name="token" value="<?php echo h($_SESSION['token']); ?>">
-              <div class="d-grid gap-2 d-md-block">
-                <button type="submit" class="btn btn-primary">新規登録</button>
-              </div>
-            </form>
-            <p class="mt-3 text-left">既に登録済みの方はこちらから <a href="login.php">ログイン</a></p>
-          </div>
+<body class="bg-light py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+          <h2 class="mb-4 text-center">新規登録</h2>
+          <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="post">
+            <div class="mb-3">
+              <label for="name" class="form-label">管理者名</label>
+              <input type="text" class="form-control <?php echo !empty($errors['admin_user']) ? 'is-invalid' : ''; ?>"
+                id="admin_user" name="admin_user" value="<?php echo h($datas['admin_user'] ?? ''); ?>">
+              <?php if (!empty($errors['admin_user'])): ?>
+                <div class="invalid-feedback"><?php echo h($errors['admin_user']); ?></div>
+              <?php endif; ?>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">メールアドレス</label>
+              <input type="email" class="form-control <?php echo !empty($errors['email']) ? 'is-invalid' : ''; ?>"
+                id="email" name="email" value="<?php echo h($datas['email'] ?? ''); ?>">
+              <?php if (!empty($errors['email'])): ?>
+                <div class="invalid-feedback"><?php echo h($errors['email']); ?></div>
+              <?php endif; ?>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">パスワード</label>
+              <input type="password" class="form-control <?php echo !empty($errors['password']) ? 'is-invalid' : ''; ?>"
+                id="password" name="password" value="<?php echo h($datas['password'] ?? ''); ?>">
+              <?php if (!empty($errors['password'])): ?>
+                <div class="invalid-feedback"><?php echo h($errors['password']); ?></div>
+              <?php endif; ?>
+            </div>
+            <div class="mb-4">
+              <label for="confirm_password" class="form-label">パスワード確認</label>
+              <input type="password"
+                class="form-control <?php echo !empty($errors['confirm_password']) ? 'is-invalid' : ''; ?>"
+                id="confirm_password" name="confirm_password"
+                value="<?php echo h($datas['confirm_password'] ?? ''); ?>">
+              <?php if (!empty($errors['confirm_password'])): ?>
+                <div class="invalid-feedback"><?php echo h($errors['confirm_password']); ?></div>
+              <?php endif; ?>
+            </div>
+            <?php echo insertCsrfToken('admin-login'); ?>
+            <div class="d-grid gap-2 d-md-block">
+              <button type="submit" class="btn btn-primary">新規登録</button>
+            </div>
+          </form>
+          <p class="mt-3 text-left">既に登録済みの方はこちらから <a href="login.php">ログイン</a></p>
         </div>
       </div>
     </div>
-  </body>
-  </head>
+  </div>
+</body>
+<?php require_once dirname(__DIR__) . '/Admin/parts/footer.php'; ?>

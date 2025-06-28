@@ -31,10 +31,7 @@ if ($product && !empty($product['product_id'])) {
   $stmt->execute([':pid' => $product['product_id']]);
   $color_options = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
+
 // 商品取得時にジャンル名も取得
 if ($product_id) {
   try {
@@ -77,7 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   ////CSRF対策
-  checkToken();
+  if (!validateCsrfToken('add_to_cart')) {
+    $error_message = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   //受け取ったデータをセッションに保存
   if ($name != '' && $price != '' && $count != '' && $color != '' && $id != '') {
     $item_found = false;
@@ -154,7 +153,7 @@ $cart_items = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
                     <input type="hidden" name="name" value="<?php echo h($product['product_name']); ?>">
                     <input type="hidden" name="id" value="<?php echo h($product['product_id']); ?>">
                     <input type="hidden" name="price" value="<?php echo h($product['price_without_tax']); ?>">
-                    <input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>">
+                    <?php echo insertCsrfToken('add_to_cart'); ?>
                     <div class="color-select-wrap">
                       <label for="color-select-form">カラー:</label>
                       <?php if (!empty($color_options)): ?>

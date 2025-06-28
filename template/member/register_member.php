@@ -51,7 +51,7 @@ include dirname(__DIR__, 2) . '/Member/register_members.php';?> <main>
             <div class="invalid-feedback"><?php echo h($errors['address']); ?></div>
             <?php endif; ?>
           </div>
-          <input type="hidden" name="token" value="<?php echo h($_SESSION['token']); ?>" />
+          <?php echo insertCsrfToken('register_members'); ?>
           <button type="submit" class="btn btn-submit">内容を確認する</button>
         </form>
       </div>

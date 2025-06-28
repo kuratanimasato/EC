@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__DIR__, 2) . '/app/database/db_connect.php';
 require_once dirname(__DIR__, 2) . '/app/functions.php';
-startSession();
+  startSession();
 if (isset($_GET['admin_user']) && $_GET['admin_user'] === 'true') {
   destroySession();
   header("location:login.php");
@@ -44,16 +44,15 @@ try {
 } catch (PDOException $e) {
   $error_message = "カラーの取得に失敗しました: " . h($e->getMessage());
 }
-//GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
+
 
 //POST通信だった場合は処理を開始
 $error_messages = [];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   ////CSRF対策
-  checkToken();
+  if (!validateCsrfToken('products-create')) {
+    $errors['csrf'] = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   $upload_dir = dirname(__DIR__, 2) . '/uploads/images/';
   $image_name = '';
   if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] === UPLOAD_ERR_OK) {
@@ -183,125 +182,116 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
+<?php include dirname(__DIR__, 2) . '/Admin/parts/header.php'; ?>
 
-  <head>
-    <meta charset="UTF-8">
-    <title>商品新規作成</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-
-  <body>
-    <div class="container mt-4">
-      <h1 class="mb-4">商品新規作成</h1>
-      <?php if (!empty($error_messages)): ?>
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          <?php foreach ($error_messages as $msg): ?>
-          <li><?php echo h($msg); ?></li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-      <?php endif; ?>
-      <?php if (!empty($error_message)): ?>
-      <div class="alert alert-danger">
-        <?php echo h($error_message); ?>
-      </div>
-      <?php endif; ?>
-      <form method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" enctype="multipart/form-data">
-        <input type="hidden" name="token" value="<?php echo h($_SESSION['token']); ?>">
-        <div class="mb-3">
-          <div class="mb-3">
-            <label for="product_id" class="form-label">商品ID（任意・ユニーク）</label>
-            <input type="text" class="form-control" id="product_id" name="product_id" maxlength="255"
-              value="<?php echo h($datas['product_id'] ?? ''); ?>">
-            <div class="form-text">指定しない場合は自動採番されます。</div>
-          </div>
-          <label for="product_name" class="form-label">商品名</label>
-          <input type="text" class="form-control" id="product_name" name="product_name" maxlength="255"
-            value="<?php echo h($datas['product_name'] ?? ''); ?>" required>
-        </div>
-        <div class="mb-3">
-          <label for="genre_id" class="form-label">ジャンル</label>
-          <select class="form-select" id="genre_id" name="genre_id" required>
-            <option value="">選択してください</option>
-            <?php foreach ($genres as $genre): ?>
-            <option value="<?php echo h($genre['genre_id']); ?>" <?php if (($datas['genre_id'] ?? '') == $genre['genre_id'])
-                   echo 'selected'; ?>>
-              <?php echo h($genre['genre_name']); ?>
-            </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label for="product_image" class="form-label">商品画像</label>
-          <input type="file" class="form-control" id="product_image" name="product_image" accept=".jpg,.jpeg,.png,.gif">
-          <div class="form-text">画像ファイル(jpg, png, gif)を選択してください。</div>
-        </div>
-        <div class="mb-3">
-          <label for="description" class="form-label">説明</label>
-          <textarea class="form-control" id="description" name="description" rows="4"
-            required><?php echo h($datas['description'] ?? ''); ?></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">販売状況</label>
-          <div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="sales_status" id="active" value="active" <?php if (($datas['sales_status'] ?? 'active') === 'active')
-                echo 'checked'; ?>>
-              <label class="form-check-label" for="active">販売中</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="sales_status" id="inactive" value="inactive"
-                <?php if (($datas['sales_status'] ?? '') === 'inactive') echo 'checked'; ?>>
-              <label class="form-check-label" for="inactive">販売停止中</label>
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="is_recommended" name="is_recommended" value="1"
-                <?php if (!empty($datas['is_recommended']) && $datas['is_recommended'] == 1) echo 'checked'; ?>>
-              <label class="form-check-label" for="is_recommended">おすすめ商品にする</label>
-            </div>
-            <div class="mb-3">
-              <label for="stock" class="form-label">在庫数</label>
-              <select class="form-select" id="stock" name="stock" required>
-                <option value="">選択してください</option>
-                <option value="<?php echo $i; ?>" <?php if (($datas['stock'] ?? '') == "0") echo 'selected'; ?>>売り切れ
-                </option>
-                <?php for ($i = 1; $i <= 10; $i++): ?>
-                <option value="<?php echo $i; ?>" <?php if (($datas['stock'] ?? '') == $i)
-                       echo 'selected'; ?>>
-                  <?php echo $i; ?>
-                </option>
-                <?php endfor; ?>
-              </select>
-              <div class="form-text">0を選択すると「在庫切れ」になります。</div>
-            </div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="price_without_tax" class="form-label">価格（税抜）</label>
-          <input type="number" class="form-control" id="price_without_tax" name="price_without_tax" min="0"
-            value="<?php echo h($datas['price_without_tax'] ?? ''); ?>" required>
-        </div>
-        <!-- カラー選択欄 -->
-        <div class="mb-3">
-          <label for="colors" class="form-label">カラー（複数選択可）</label>
-          <select class="form-select" id="colors" name="colors[]" multiple>
-            <?php foreach ($colors as $color): ?>
-            <option value="<?php echo h($color['color_id']); ?>"
-              <?php if (!empty($selected_colors) && in_array($color['color_id'], $selected_colors)) echo 'selected'; ?>>
-              <?php echo h($color['color_name']); ?>
-              <?php if ($color['color_code']): ?>（<?php echo h($color['color_code']); ?>）<?php endif; ?>
-            </option>
-            <?php endforeach; ?>
-          </select>
-          <div class="form-text">CtrlまたはShiftキーで複数選択できます。</div>
-        </div>
-        <button type="submit" class="btn btn-primary btn-sm">登録</button>
-        <a href="products.php" class="btn btn-secondary btn-sm">戻る</a>
-      </form>
+<body>
+  <div class="container mt-4">
+    <h1 class="mb-4">商品新規作成</h1>
+    <?php if (!empty($error_messages)): ?>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <?php foreach ($error_messages as $msg): ?>
+        <li><?php echo h($msg); ?></li>
+        <?php endforeach; ?>
+      </ul>
     </div>
-  </body>
-
-</html>
+    <?php endif; ?>
+    <?php if (!empty($error_message)): ?>
+    <div class="alert alert-danger">
+      <?php echo h($error_message); ?>
+    </div>
+    <?php endif; ?>
+    <form method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" enctype="multipart/form-data">
+      <?php echo insertCsrfToken('products-create'); ?>
+      <div class="mb-3">
+        <div class="mb-3">
+          <label for="product_id" class="form-label">商品ID（任意・ユニーク）</label>
+          <input type="text" class="form-control" id="product_id" name="product_id" maxlength="255"
+            value="<?php echo h($datas['product_id'] ?? ''); ?>">
+          <div class="form-text">指定しない場合は自動採番されます。</div>
+        </div>
+        <label for="product_name" class="form-label">商品名</label>
+        <input type="text" class="form-control" id="product_name" name="product_name" maxlength="255"
+          value="<?php echo h($datas['product_name'] ?? ''); ?>" required>
+      </div>
+      <div class="mb-3">
+        <label for="genre_id" class="form-label">ジャンル</label>
+        <select class="form-select" id="genre_id" name="genre_id" required>
+          <option value="">選択してください</option>
+          <?php foreach ($genres as $genre): ?>
+          <option value="<?php echo h($genre['genre_id']); ?>" <?php if (($datas['genre_id'] ?? '') == $genre['genre_id'])
+                   echo 'selected'; ?>>
+            <?php echo h($genre['genre_name']); ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="product_image" class="form-label">商品画像</label>
+        <input type="file" class="form-control" id="product_image" name="product_image" accept=".jpg,.jpeg,.png,.gif">
+        <div class="form-text">画像ファイル(jpg, png, gif)を選択してください。</div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">説明</label>
+        <textarea class="form-control" id="description" name="description" rows="4"
+          required><?php echo h($datas['description'] ?? ''); ?></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">販売状況</label>
+        <div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="sales_status" id="active" value="active" <?php if (($datas['sales_status'] ?? 'active') === 'active')
+                echo 'checked'; ?>>
+            <label class="form-check-label" for="active">販売中</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="sales_status" id="inactive" value="inactive"
+              <?php if (($datas['sales_status'] ?? '') === 'inactive') echo 'checked'; ?>>
+            <label class="form-check-label" for="inactive">販売停止中</label>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="is_recommended" name="is_recommended" value="1"
+              <?php if (!empty($datas['is_recommended']) && $datas['is_recommended'] == 1) echo 'checked'; ?>>
+            <label class="form-check-label" for="is_recommended">おすすめ商品にする</label>
+          </div>
+          <div class="mb-3">
+            <label for="stock" class="form-label">在庫数</label>
+            <select class="form-select" id="stock" name="stock" required>
+              <option value="">選択してください</option>
+              <option value="<?php echo $i; ?>" <?php if (($datas['stock'] ?? '') == "0") echo 'selected'; ?>>売り切れ
+              </option>
+              <?php for ($i = 1; $i <= 10; $i++): ?>
+              <option value="<?php echo $i; ?>" <?php if (($datas['stock'] ?? '') == $i)
+                       echo 'selected'; ?>>
+                <?php echo $i; ?>
+              </option>
+              <?php endfor; ?>
+            </select>
+            <div class="form-text">0を選択すると「在庫切れ」になります。</div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="price_without_tax" class="form-label">価格（税抜）</label>
+        <input type="number" class="form-control" id="price_without_tax" name="price_without_tax" min="0"
+          value="<?php echo h($datas['price_without_tax'] ?? ''); ?>" required>
+      </div>
+      <!-- カラー選択欄 -->
+      <div class="mb-3">
+        <label for="colors" class="form-label">カラー（複数選択可）</label>
+        <select class="form-select" id="colors" name="colors[]" multiple>
+          <?php foreach ($colors as $color): ?>
+          <option value="<?php echo h($color['color_id']); ?>"
+            <?php if (!empty($selected_colors) && in_array($color['color_id'], $selected_colors)) echo 'selected'; ?>>
+            <?php echo h($color['color_name']); ?>
+            <?php if ($color['color_code']): ?>（<?php echo h($color['color_code']); ?>）<?php endif; ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
+        <div class="form-text">CtrlまたはShiftキーで複数選択できます。</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">登録</button>
+      <a href="products.php" class="btn btn-secondary btn-sm">戻る</a>
+    </form>
+  </div>
+  <?php include dirname(__DIR__, 2) . '/Admin/parts/footer.php'; ?>

@@ -48,14 +48,14 @@ if (!empty($cart) && is_array($cart)) {
     $total_amount += $item_price * $item_count;
   }
 }
-// GET通信だった場合はセッション変数にトークンを追加
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  setToken();
-}
+
 
 // POST通信の場合はCSRFトークンをチェック
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  checkToken();
+  // CSRF対策
+  if (!validateCsrfToken('order_confirm')) {
+    $error_message = '不正なリクエストです。(CSRFトークンエラー)';
+  }
   global $pdo;
   if (!$pdo) {
     $error_message = "データベース接続に失敗しました。システム管理者にお問い合わせください。" . $e->getMessage();
@@ -200,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <form action="<?php echo h($_SERVER['SCRIPT_NAME']); ?>" method="POST">
             <?php if (!empty($cart) && is_array($cart)): // Only show confirm button if cart is not empty ?>
               <div class="form-actions" style="margin-top: 30px; text-align: center;">
-                <input type="hidden" name="token" value="<?php echo h($_SESSION['token'] ?? ''); ?>" />
+                <?php echo insertCsrfToken('order_confirm'); ?>
                 <button type="submit" class="btn btn-primary btn-lg">この内容で注文する</button>
               </div>
             <?php endif; ?>
