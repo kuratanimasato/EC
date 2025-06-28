@@ -1,8 +1,11 @@
 <?php
-$dbHost = "localhost";
-$dbName = "my_ec_store_db";
-$dbUser = "masatokuratani";
-$dbPass = "masatomimi55";
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
+$dotenv->load();
+$dbHost = $_ENV['DB_HOST'] ?? 'localhost';
+$dbName = $_ENV['DB_NAME'] ?? 'my_ec_store_db';
+$dbUser = $_ENV['DB_USER'] ?? 'root';
+$dbPass = $_ENV['DB_PASS'] ?? '';
 
 //---- データベースへの接続 ---//
 $options = [
