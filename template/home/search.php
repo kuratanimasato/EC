@@ -6,6 +6,7 @@ include dirname(__DIR__) . '/parts/sub-navigation.php';
 
 
 $raw_keyword = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS);
+$raw_keyword = $raw_keyword ?? ''; // 追加: nullチェックを行い、空文字列に初期化
 $normalized_keyword = preg_replace('/　/u', ' ', $raw_keyword); // 全角スペースを半角に
 $normalized_keyword = trim($normalized_keyword);
 
@@ -61,7 +62,6 @@ if (!empty($normalized_keyword)) {
   }
 }
 ?>
-
 <main>
   <div class="container">
     <div class="main-content-wrapper">
@@ -105,33 +105,37 @@ if (!empty($normalized_keyword)) {
               </div>
             <?php endforeach; ?>
           </div>
-
           <?php if ($total_pages > 1): ?>
-            <nav aria-label="Page navigation">
-              <ul class="pagination justify-content-center mt-4">
-                <?php if ($page > 1): ?>
-                  <li class="page-item">
-                    <a class="page-link"
-                      href="?search=<?php echo urlencode($normalized_keyword); ?>&page=<?php echo $page - 1; ?>">前へ</a>
-                  </li>
-                <?php endif; ?>
-
-                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                  <li class="page-item <?php if ($i == $page)
-                    echo 'active'; ?>">
-                    <a class="page-link"
-                      href="?search=<?php echo urlencode($normalized_keyword); ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                  </li>
-                <?php endfor; ?>
-
-                <?php if ($page < $total_pages): ?>
-                  <li class="page-item">
-                    <a class="page-link"
-                      href="?search=<?php echo urlencode($normalized_keyword); ?>&page=<?php echo $page + 1; ?>">次へ</a>
-                  </li>
-                <?php endif; ?>
-              </ul>
-            </nav>
+            <ul class="Pagination">
+              <?php if ($page > 1): ?>
+                <li class="Pagination-Item">
+                  <a class="Pagination-Item-Link" href="?page=<?php echo $page - 1; ?>">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="Pagination-Item-Link-Icon" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </a>
+                </li>
+              <?php endif; ?>
+              <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <li class="Pagination-Item">
+                  <a class="Pagination-Item-Link<?php if ($i == $page)
+                    echo ' isActive'; ?>" href="?page=<?php echo $i; ?>">
+                    <span><?php echo $i; ?></span>
+                  </a>
+                </li>
+              <?php endfor; ?>
+              <?php if ($page < $total_pages): ?>
+                <li class="Pagination-Item">
+                  <a class="Pagination-Item-Link" href="?page=<?php echo $page + 1; ?>">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="Pagination-Item-Link-Icon" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </li>
+              <?php endif; ?>
+            </ul>
           <?php endif; ?>
         <?php endif; ?>
       </section>
