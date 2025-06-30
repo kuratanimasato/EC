@@ -2,6 +2,7 @@
 require_once dirname(__DIR__, 2) . '/app/database/db_connect.php';
 require_once dirname(__DIR__, 2) . '/app/functions.php';
 startSession();
+
 if (isset($_GET['admin_user']) && $_GET['admin_user'] === 'true') {
   destroySession();
   header("location:login.php");
@@ -58,7 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST' && !empty($_GET['id'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['colors'])) {
   $selected_colors = array_map('intval', $_POST['colors']);
 }
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+} else {
+  $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+}
 //GET通信だった場合はセッション変数にトークンを追加
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -186,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           }
         }
         $pdo->commit();
-        header("location: products.php?success=商品を更新しました");
+        header("location: products.php?page={$page}&success=商品を更新しました&id=" . urlencode($datas['product_id']));
         exit;
       } catch (PDOException $e) {
         $pdo->rollBack();
@@ -216,6 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div> <?php endif; ?>
     <form method="POST" action="" enctype="multipart/form-data">
       <?php echo insertCsrfToken('products-edit'); ?>
+      <input type="hidden" name="page" value="<?php echo h($page); ?>">
       <div class="mb-3">
         <label for="product_id" class="form-label">商品ID（変更不可）</label>
         <input type="hidden" name="product_id" value="<?php echo h($datas['product_id'] ?? ''); ?>">
@@ -302,7 +308,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </option>
           <?php endfor; ?>
         </select>
-        <div class="form-text">0を選択すると「在庫切れ」になります。</div>
+        <div class=" form-text">0を選択すると「在庫切れ」になります。
+        </div>
       </div>
       <div class=" mb-3">
         <label for="price_without_tax" class="form-label">価格（税抜）</label>

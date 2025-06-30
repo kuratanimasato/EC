@@ -95,22 +95,22 @@ if ($product_ids) {
 <body>
   <div class="container mt-4">
     <?php if (isset($error_message)): ?>
-      <div class="alert alert-danger text-center">
-        <?php echo h($error_message); ?>
-      </div>
+    <div class="alert alert-danger text-center">
+      <?php echo h($error_message); ?>
+    </div>
     <?php endif; ?>
     <?php if (isset($_GET['success'])): ?>
-      <div class="alert alert-success alert-dismissible fade show text-center fade-message" role="alert">
-        <?php echo h($_GET['success']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-        </button>
-      </div>
+    <div class="alert alert-success alert-dismissible fade show text-center fade-message" role="alert">
+      <?php echo h($_GET['success']); ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+      </button>
+    </div>
     <?php endif; ?>
     <?php if (isset($_GET['error'])): ?>
-      <div class="alert alert-danger alert-dismissible fade show text-center fade-message" role="alert">
-        <?php echo h($_GET['error']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+    <div class="alert alert-danger alert-dismissible fade show text-center fade-message" role="alert">
+      <?php echo h($_GET['error']); ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <?php endif; ?>
     <div class="row">
       <div class="row justify-content-center">
@@ -125,130 +125,131 @@ if ($product_ids) {
             </div>
             <div class="card-body">
               <?php if (!empty($products)): ?>
-                <div class="table-responsive">
-                  <table class="table table-striped table-bordered table-hover text-center">
-                    <thead class="table-dark">
-                      <tr>
-                        <th>製品ID</th>
-                        <th>ジャンルID</th>
-                        <th>商品名</th>
-                        <th>商品画像</th>
-                        <th>カラー</th>
-                        <th>販売状況</th>
-                        <th>おすすめ</th>
-                        <th>在庫状況</th>
-                        <th>価格</th>
-                        <th>説明</th>
-                        <th>操作</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php foreach ($products as $product): ?>
-                        <tr>
-                          <td><?php echo h($product['product_id']); ?></td>
-                          <td><?php echo h($product['genre_name'] ?? $product['genre_id']); ?></td>
-                          <td><?php echo h($product['product_name']); ?></td>
-                          <td>
-                            <?php if (!empty($product['product_image'])): ?>
-                              <img src="/uploads/images/<?php echo h(basename($product['product_image'])); ?>" alt="商品画像"
-                                width="60" height="60" style="object-fit:cover; border-radius:4px;">
-                            <?php else: ?>
-                              <span class="text-muted">画像なし</span>
-                            <?php endif; ?>
-                          </td>
-                          <td>
-                            <?php
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover text-center">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>製品ID</th>
+                      <th>ジャンルID</th>
+                      <th>商品名</th>
+                      <th>商品画像</th>
+                      <th>カラー</th>
+                      <th>販売状況</th>
+                      <th>おすすめ</th>
+                      <th>在庫状況</th>
+                      <th>価格</th>
+                      <th>説明</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($products as $product): ?>
+                    <tr>
+                      <td><?php echo h($product['product_id']); ?></td>
+                      <td><?php echo h($product['genre_name'] ?? $product['genre_id']); ?></td>
+                      <td><?php echo h($product['product_name']); ?></td>
+                      <td>
+                        <?php if (!empty($product['product_image'])): ?>
+                        <img src="/uploads/images/<?php echo h(basename($product['product_image'])); ?>" alt="商品画像"
+                          width="60" height="60" style="object-fit:cover; border-radius:4px;">
+                        <?php else: ?>
+                        <span class="text-muted">画像なし</span>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <?php
                             $colors = $colors_map[$product['product_id']] ?? [];
                             if ($colors):
                               foreach ($colors as $color):
                                 ?>
-                                <span style="display:inline-block;vertical-align:middle;margin-right:6px;">
-                                  <?php if ($color['color_code']): ?>
-                                    <span
-                                      style="display:inline-block;width:16px;height:16px;border-radius:50%;background:<?php echo h($color['color_code']); ?>;border:1px solid #ccc;vertical-align:middle;margin-right:2px;"></span>
-                                  <?php endif; ?>
-                                  <?php echo h($color['color_name']); ?>
-                                </span>
-                                <?php
+                        <span style="display:inline-block;vertical-align:middle;margin-right:6px;">
+                          <?php if ($color['color_code']): ?>
+                          <span
+                            style="display:inline-block;width:16px;height:16px;border-radius:50%;background:<?php echo h($color['color_code']); ?>;border:1px solid #ccc;vertical-align:middle;margin-right:2px;"></span>
+                          <?php endif; ?>
+                          <?php echo h($color['color_name']); ?>
+                        </span>
+                        <?php
                               endforeach;
                             else:
                               echo '<span class="text-muted">なし</span>';
                             endif;
                             ?>
-                          </td>
+                      </td>
 
-                          <td>
-                            <?php
+                      <td>
+                        <?php
                             $status = $product['sales_status'];
                             echo isset($sales_status_labels[$status]) ? h($sales_status_labels[$status]) : h($status);
                             ?>
-                          </td>
-                          <td>
-                            <?php if ($product['is_recommended'] == 1): ?>
-                              <span class="badge bg-success">●</span>
-                            <?php else: ?>
-                              <span class="text-muted">-</span>
-                            <?php endif; ?>
-                          </td>
-                          <td>
-                            <?php
+                      </td>
+                      <td>
+                        <?php if ($product['is_recommended'] == 1): ?>
+                        <span class="badge bg-success">●</span>
+                        <?php else: ?>
+                        <span class="text-muted">-</span>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <?php
                             if ((string) $product['stock'] === "0") {
                               echo '<span class="text-danger">在庫切れ</span>';
                             } else {
                               echo h($product['stock']);
                             }
                             ?>
-                          </td>
-                          <td><?php echo number_format($product['price_without_tax']); ?> 円</td>
-                          <td> <?php
+                      </td>
+                      <td><?php echo number_format($product['price_without_tax']); ?> 円</td>
+                      <td> <?php
                           $desc = strip_tags($product['description']);
                           echo h(mb_strimwidth($desc, 0, 20, '...'));
                           ?></td>
-                          <td class="text-center">
-                            <div class="d-flex gap-1 justify-content-center">
-                              <button type=" button" class="btn btn-secondary btn-sm"
-                                onclick=" location.href='products_detail.php?id=<?php echo h($product['product_id']); ?>'">詳細</button>
-                              <button type=" button" class="btn btn-primary btn-sm"
-                                onclick="location.href='products_edit.php?id=<?php echo h($product['product_id']); ?>'">
-                                編集</button>
-                              <form action="prodcuts_delete.php" method="post" class="m-0">
-                                <?php echo insertCsrfToken('products'); ?>
-                                <input type="hidden" name="product_id" value="<?php echo h($product['product_id']); ?>">
-                                <button type="submit" class="btn btn-danger btn-sm"
-                                  onclick="return confirm('本当に削除しますか？');">削除</button>
-                              </form>
-                            </div>
-                          </td>
-                        </tr>
-                      <?php endforeach; ?>
-                    </tbody>
-                  </table>
-                  <?php if ($total_pages > 1): ?>
-                    <nav>
-                      <ul class="pagination justify-content-center mt-3">
-                        <?php if ($page > 1): ?>
-                          <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $page - 1; ?>">前へ</a>
-                          </li>
-                        <?php endif; ?>
-                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                          <li class="page-item<?php if ($i == $page)
+                      <td class="text-center">
+                        <div class="d-flex gap-1 justify-content-center">
+                          <button type=" button" class="btn btn-secondary btn-sm"
+                            onclick=" location.href='products_detail.php?id=<?php echo h($product['product_id']); ?>&page=<?php echo $page; ?>'">詳細</button>
+                          <button type="button" class="btn btn-primary btn-sm"
+                            onclick="location.href='products_edit.php?id=<?php echo h($product['product_id']); ?>&page=<?php echo $page; ?>'">
+                            編集
+                          </button>
+                          <form action="prodcuts_delete.php" method="post" class="m-0">
+                            <?php echo insertCsrfToken('products'); ?>
+                            <input type="hidden" name="product_id" value="<?php echo h($product['product_id']); ?>">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                              onclick="return confirm('本当に削除しますか？');">削除</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+                <?php if ($total_pages > 1): ?>
+                <nav>
+                  <ul class="pagination justify-content-center mt-3">
+                    <?php if ($page > 1): ?>
+                    <li class="page-item">
+                      <a class="page-link" href="?page=<?php echo $page - 1; ?>">前へ</a>
+                    </li>
+                    <?php endif; ?>
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item<?php if ($i == $page)
                             echo ' active'; ?>">
-                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                          </li>
-                        <?php endfor; ?>
-                        <?php if ($page < $total_pages): ?>
-                          <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $page + 1; ?>">次へ</a>
-                          </li>
-                        <?php endif; ?>
-                      </ul>
-                    </nav>
-                  <?php endif; ?>
-                </div>
+                      <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                    <?php endfor; ?>
+                    <?php if ($page < $total_pages): ?>
+                    <li class="page-item">
+                      <a class="page-link" href="?page=<?php echo $page + 1; ?>">次へ</a>
+                    </li>
+                    <?php endif; ?>
+                  </ul>
+                </nav>
+                <?php endif; ?>
+              </div>
               <?php else: ?>
-                <div class=" text-center">
-                  現在、登録されている商品はありません。
+              <div class=" text-center">
+                現在、登録されている商品はありません。
                 <?php endif; ?>
               </div>
             </div>
