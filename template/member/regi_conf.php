@@ -7,6 +7,7 @@ $confirmationData = null;
 if (isset($_SESSION['registration_confirmation_data'])) {
   $confirmationData = $_SESSION['registration_confirmation_data'];
 }
+
 ?>
 <main>
   <div class="wrapper last-wrapper register-wrapper">
@@ -26,7 +27,6 @@ if (isset($_SESSION['registration_confirmation_data'])) {
               <p class="confirm-form"><strong>ご住所:</strong> <?php echo h($confirmationData['address']); ?></p>
               <input type="hidden" name="address" value="<?php echo h($confirmationData['address']); ?>">
             </div>
-            <?php echo insertCsrfToken('register_members'); ?>
             <p>こちらの内容で送信してよろしいですか？</p>
             <button type="submit" class="btn btn-submit">送信する</button>
           </form>

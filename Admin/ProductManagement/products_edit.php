@@ -253,7 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <!-- カラー選択欄 -->
       <div class="mb-3">
         <label for="colors" class="form-label">カラー（複数選択可）</label>
-        <selectclass="form-select" id="colors" name="colors[]" multiple>
+        <select class="form-select" id="colors" name="colors[]" multiple>
           <?php foreach ($colors as $color): ?>
             <option value="<?php echo h($color['color_id']); ?>" <?php if (!empty($selected_colors) && in_array($color['color_id'], $selected_colors))
                  echo 'selected'; ?>>
@@ -261,8 +261,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <?php if ($color['color_code']): ?>（<?php echo h($color['color_code']); ?>）<?php endif; ?>
             </option>
           <?php endforeach; ?>
-          </selectclass=>
-          <div class="form-text">CtrlまたはShiftキーで複数選択できます。</div>
+        </select>
+        <div class="form-text">CtrlまたはShiftキーで複数選択できます。</div>
       </div>
       <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input" id="is_recommended" name="is_recommended" value="1" <?php if (!empty($datas['is_recommended']) && $datas['is_recommended'] == 1)
